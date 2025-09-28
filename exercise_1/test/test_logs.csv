@@ -1,0 +1,8 @@
+test_name,status,duration
+login_test,PASS,1.2
+payment_test,FAIL,3.4
+checkout_test,PASS,2.1
+search_test,PASS,0.9
+logout_test,FAIL,2.8
+profile_update_test,PASS,1.7
+cart_add_test,FAIL,3.0
