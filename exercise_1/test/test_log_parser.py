@@ -1,7 +1,5 @@
 import pytest
-import tempfile
 import os
-import csv
 
 from exercise_1.src import log_parser
 
