@@ -1,5 +1,6 @@
 import argparse
 import inspect
+import json
 import sys
 import time
 import traceback
@@ -99,7 +100,10 @@ def run_tests_with_params():
     print(f"Total Duration: {sum(r['duration'] for r in results):.4f}s")
 
     if args.r == "yes":
-        with open("test_report.log", "w") as f:
+        with open("artifacts/results.json", "w") as f:
+            json.dump(results, f, indent=2)
+
+        with open("artifacts/test_report.log", "w") as f:
             for r in results:
                 f.write(f"{r['status']} - {r['test_name']} - {r['duration']:.4f}s\n")
                 if "error" in r:

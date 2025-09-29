@@ -23,6 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          mkdir -p artifacts
           pip install -r requirements.txt || true
 
       - name: Run custom test runner
