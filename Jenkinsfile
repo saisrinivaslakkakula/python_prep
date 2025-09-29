@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "calc-app"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,28 +12,51 @@ pipeline {
             }
         }
 
-        stage('Setup Python') {
+        stage('Setup Python & Run Unit Tests') {
             steps {
                 sh '''
                     python3 -m venv venv
                     source venv/bin/activate
+                    pip install --upgrade pip
                     pip install -r requirements.txt || true
+                    pytest --maxfail=1 --disable-warnings -q
                 '''
             }
         }
 
-        stage('Run Tests') {
+        stage('Build Docker Image') {
             steps {
                 sh '''
-                    source venv/bin/activate
-                    mkdir -p artifacts
-                    python -m exercise_2b --r yes
+                    docker build -t $IMAGE_NAME:${BUILD_NUMBER} .
+                '''
+            }
+        }
+
+        stage('System Tests') {
+            steps {
+                sh '''
+                    echo "Running system tests..."
+
+                    # Test 1: addition
+                    output=$(docker run --rm $IMAGE_NAME:${BUILD_NUMBER} + 1 2)
+                    [ "$output" = "3" ] || { echo "FAIL: expected 3, got $output"; exit 1; }
+
+                    # Test 2: subtraction
+                    output=$(docker run --rm $IMAGE_NAME:${BUILD_NUMBER} - 1 2)
+                    [ "$output" = "-1" ] || { echo "FAIL: expected -1, got $output"; exit 1; }
+
+                    echo "✅ All system tests passed!"
                 '''
             }
         }
 
         stage('Archive Results') {
             steps {
+                sh '''
+                    mkdir -p artifacts
+                    echo "Build: ${BUILD_NUMBER}" > artifacts/build_info.txt
+                    echo "System tests passed." > artifacts/system_test_results.txt
+                '''
                 archiveArtifacts artifacts: 'artifacts/*', fingerprint: true
             }
         }
@@ -37,10 +64,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build and tests passed!"
+            echo "✅ Build + Unit Tests + System Tests passed!"
         }
         failure {
-            echo "❌ Build failed. Check logs and artifacts."
+            echo "❌ Build failed. Check logs & artifacts."
         }
     }
 }
