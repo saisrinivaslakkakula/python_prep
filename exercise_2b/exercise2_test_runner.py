@@ -1,5 +1,6 @@
 import argparse
 import inspect
+import sys
 import time
 import traceback
 import exercise_2.test.test_calculator as test
@@ -104,6 +105,8 @@ def run_tests_with_params():
                 if "error" in r:
                     f.write(f"   Error: {r['error']}\n")
         print("Report written to test_report.log")
+
+    sys.exit(0 if len(failed) == 0 else 1)
 
 
 if __name__ == "__main__":
