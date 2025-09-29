@@ -36,11 +36,11 @@ pipeline {
                     echo "Running system tests..."
 
                     # Test 1: addition
-                    output=$(docker run --rm $IMAGE_NAME:${BUILD_NUMBER} + 1 2)
+                    output=$(/usr/local/bin/docker run --rm $IMAGE_NAME:${BUILD_NUMBER} 1 + 2)
                     [ "$output" = "3" ] || { echo "FAIL: expected 3, got $output"; exit 1; }
 
                     # Test 2: subtraction
-                    output=$(docker run --rm $IMAGE_NAME:${BUILD_NUMBER} - 1 2)
+                    output=$(/usr/local/bin/docker run --rm $IMAGE_NAME:${BUILD_NUMBER}  1 - 2)
                     [ "$output" = "-1" ] || { echo "FAIL: expected -1, got $output"; exit 1; }
 
                     echo "✅ All system tests passed!"
