@@ -43,7 +43,7 @@ def test_calculator_multiply_throws_RTE_when_Invalid_input_passed():
     assert str(exec.value) == "Invalid Input, numbers must be integers"
 
 def test_calculator_multiply_throws_RTE_when_negative_input_passed():
-    calc = Calculator(-8, -7)
+    calc = Calculator(-8, -6)
     with pytest.raises(RuntimeError) as exec:
         calc.multiply_whole_nums()
     assert str(exec.value) == "Only positive integers are allowed for multiplication"
